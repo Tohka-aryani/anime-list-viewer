@@ -3,12 +3,12 @@ import streamlit as st
 
 # Load the anime review data from CSV file
 def load_data():
-    data = pd.read_csv("anime_reviews.csv")
+    data = pd.read_csv("Book1.csv")
     return data
 
 # Save the anime review data to CSV file
 def save_data(data):
-    data.to_csv("anime_reviews.csv", index=False)
+    data.to_csv("Book1.csv", index=False)
 
 # Add new anime review to the data
 def add_review(data, anime_title, animation_studio, status, genre, rating, notes):
