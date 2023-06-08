@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 
 # Define the path to the CSV file
-CSV_FILE = "anime_reviews.csv"
+CSV_FILE = "Book1.csv"
 
 # Create a form page for inserting new data
 def add_anime_review():
