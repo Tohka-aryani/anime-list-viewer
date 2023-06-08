@@ -1,65 +1,51 @@
-import pandas as pd
 import streamlit as st
+import pandas as pd
 
-# Define the path to the CSV file
-CSV_FILE = "Book1.csv"
+# Function to read the CSV file
+def load_data():
+    data = pd.read_csv('Book1.csv')
+    return data
 
-# Create a form page for inserting new data
-def add_anime_review():
-    st.header("Add Anime Review")
-    anime_title = st.text_input("Anime Title")
-    animation_studio = st.text_input("Animation Studio")
-    status = st.selectbox("Status", ["Watching", "Completed", "On Hold", "Dropped"])
-    genre = st.text_input("Genre")
-    rating = st.slider("Rating", min_value=1, max_value=10, step=1)
-    notes = st.text_area("Notes")
-    submit = st.button("Submit")
+# Function to save data to the CSV file
+def save_data(data):
+    data.to_csv('Book1.csv', index=False)
 
-    if submit:
-        new_review = {
-            "Anime Title": anime_title,
-            "Animation Studio": animation_studio,
-            "Status": status,
-            "Genre": genre,
-            "Rating": rating,
-            "Notes": notes
-        }
+# Function to filter data based on status
+def filter_data(data, status):
+    if status == 'All':
+        return data
+    filtered_data = data[data['Status'] == status]
+    return filtered_data
 
-        df = pd.read_csv(CSV_FILE)
-        df = df.append(new_review, ignore_index=True)
-        df.to_csv(CSV_FILE, index=False)
-
-        st.success("Anime review added successfully!")
-
-# Search and filter anime reviews by status
-def search_anime_reviews():
-    st.header("Search Anime Reviews")
-    status_filter = st.selectbox("Filter by Status", ["All", "Watching", "Completed", "On Hold", "Dropped"])
-
-    df = pd.read_csv(CSV_FILE)
-
-    if status_filter != "All":
-        df = df[df["Status"] == status_filter]
-
-    st.table(df)
-
-# Main program
+# Main function
 def main():
     st.title("Anime Review List")
+    data = load_data()
 
-    # Create the CSV file if it doesn't exist
-    try:
-        df = pd.read_csv(CSV_FILE)
-    except FileNotFoundError:
-        df = pd.DataFrame(columns=["Anime Title", "Animation Studio", "Status", "Genre", "Rating", "Notes"])
-        df.to_csv(CSV_FILE, index=False)
+    # Display the form page to insert new data
+    st.subheader("Insert New Data")
+    anime_title = st.text_input("Anime Title")
+    animation_studio = st.text_input("Animation Studio")
+    status = st.selectbox("Status", ['Watching', 'Completed', 'On Hold', 'Dropped'])
+    genre = st.text_input("Genre")
+    rating = st.slider("Rating", min_value=0, max_value=10, step=0.5)
+    notes = st.text_area("Notes")
+    if st.button("Add"):
+        new_data = {'Anime Title': anime_title, 'Animation Studio': animation_studio, 'Status': status,
+                    'Genre': genre, 'Rating': rating, 'Notes': notes}
+        data = data.append(new_data, ignore_index=True)
+        save_data(data)
+        st.success("New data has been added!")
 
-    menu_choice = st.sidebar.selectbox("Menu", ["Add Anime Review", "Search Anime Reviews"])
+    # Display search and filter bar
+    st.subheader("Search and Filter")
+    status_filter = st.selectbox("Filter by Status", ['All', 'Watching', 'Completed', 'On Hold', 'Dropped'])
+    filtered_data = filter_data(data, status_filter)
 
-    if menu_choice == "Add Anime Review":
-        add_anime_review()
-    elif menu_choice == "Search Anime Reviews":
-        search_anime_reviews()
+    # Display the filtered data
+    st.subheader("Anime Review List")
+    st.dataframe(filtered_data)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
+
